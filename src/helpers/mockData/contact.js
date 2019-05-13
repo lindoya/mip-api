@@ -12,6 +12,7 @@ const generateContact = () => {
   const contactMock = {
     name: faker.name.firstName(),
     email: faker.internet.email(),
+    // email: "real_ponto@hotmail.com",
     position: faker.name.jobArea(),
     phone: generateCellPhoneNumber(),
   }

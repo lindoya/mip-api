@@ -69,6 +69,20 @@ describe('contact-domain', () => {
         }]))
     })
 
+    test('try add contact without email invalid', async () => {
+      const chipMock = {
+        ...contactMockGenerated,
+        email: 'realponto@hotmail'
+      }
+
+      await expect(contactDomain.contact_Create(chipMock)).rejects
+        .toThrowError(new FieldValidationError([{
+          field: 'email',
+          message: 'email is invalid',
+        }]))
+    })
+
+
     test('try add contact with phone null', async () => {
       const chipMock = contactMockGenerated
       chipMock.phone = ''
