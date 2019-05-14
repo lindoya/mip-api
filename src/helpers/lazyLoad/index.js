@@ -73,6 +73,7 @@ const getAttributes = (field, model) => model.rawAttributes[field]
 const getLimitAndOffset = (total, page) => {
   let limit = 25
   let offset = 0
+  let pageResponse = 1
 
   // in the next block mount limit and offset, limit in range 1 - 100
   const isTotalHigherThanMaximun = totalRecived => totalRecived > 100
@@ -91,6 +92,8 @@ const getLimitAndOffset = (total, page) => {
     [R.T, R.identity],
   ])
 
+  pageResponse = getPage(page)
+
   limit = getLimit(total)
 
   // eslint-disable-next-line no-underscore-dangle
@@ -99,7 +102,7 @@ const getLimitAndOffset = (total, page) => {
 
   offset = getOffset(limit)
 
-  return { limit, offset }
+  return { limit, offset, pageResponse }
 }
 
 const getGlobalSearchFormated = (filter, model) => {
