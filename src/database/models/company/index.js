@@ -59,7 +59,8 @@ module.exports = (sequelize) => {
 
     company.belongsTo(models.companyGroup, {
       foreignKey: {
-        allowNull: false,
+        defaultValue: null,
+        allowNull: true,
       },
     })
 
