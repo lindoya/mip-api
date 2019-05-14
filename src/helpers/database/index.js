@@ -24,6 +24,16 @@ const createUserAdmin = async () => {
   await User.create(userAdmin, { include: [Login] })
 }
 
+const createCompanyGroup = async () => {
+  const CompanyGroup = db.model('companyGroup')
+  const companyGroup = {
+    groupName: 'Sem grupo',
+    description: '-',
+  }
+  await CompanyGroup.create(companyGroup)
+}
+
+
 const dropAndDisconnectDatabase = () => db
   .close()
 
@@ -33,4 +43,5 @@ module.exports = {
   dropAndDisconnectDatabase,
   createUserAdmin,
   dropAllTable,
+  createCompanyGroup,
 }
