@@ -6,6 +6,9 @@ const { FieldValidationError } = require('../../../helpers/errors')
 const database = require('../../../database')
 
 const CompanyGroup = database.model('companyGroup')
+const Company = database.model('company')
+
+const formatQuery = require('../../../helpers/lazyLoad')
 
 class CompanyGroupDomain {
   // eslint-disable-next-line camelcase
@@ -126,6 +129,65 @@ class CompanyGroupDomain {
     const companyGroupUpdated = await this.companyGroup_GetById(id, { transaction })
 
     return companyGroupUpdated
+  }
+
+  // eslint-disable-next-line camelcase
+  async companyGroup_GetAll(query = null, options = {}) {
+    const { transaction = null } = options
+
+    const {
+      getWhere,
+      limit,
+      offset,
+      pageResponse,
+    } = formatQuery(query)
+
+    const grups = await CompanyGroup.findAndCountAll({
+      where: getWhere('companyGroup'),
+      limit,
+      offset,
+      transaction,
+    })
+
+    const { rows } = grups
+
+
+    const qntCompPromiseList = []
+
+    const formatRow = R.forEach((row) => {
+      const qntEmp = Company.count({
+        where: {
+          companyGroupId: row.id,
+        },
+      })
+      qntCompPromiseList.push(qntEmp)
+    })
+
+    formatRow(rows)
+
+    const qntCompList = await Promise.all(qntCompPromiseList)
+
+    const companyGroupsList = []
+    for (let index = 0; index < rows.length; index += 1) {
+      const qntComp = qntCompList[index]
+      const row = rows[index]
+
+      companyGroupsList.push({
+        groupName: row.groupName,
+        description: row.description,
+        createdAt: row.createdAt,
+        deletedAt: row.deletedAt,
+        qntComp,
+      })
+    }
+
+    const response = {
+      page: pageResponse,
+      show: limit,
+      count: grups.count,
+      rows: companyGroupsList,
+    }
+    return response
   }
 }
 

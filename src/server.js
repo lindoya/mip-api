@@ -6,6 +6,7 @@ const logger = require('morgan')
 const databaseHelper = require('./helpers/database')
 const errorFormatter = require('./helpers/errors/formatter')
 const loginRoute = require('./routes/login')
+const protectRoute = require('./routes/protect')
 
 const app = Express()
 // const authRoute = require('./routes/auth')
@@ -22,6 +23,7 @@ app.use(Express.static('public'))
 app.use(bodyParser.json())
 
 app.use('/oapi', loginRoute)
+app.use('/api', protectRoute)
 // app.post('/contract-upload', uploadMiddleware('file', 'temporary', { isTemp: true }))
 
 // app.use(unprotectedRoute)

@@ -162,4 +162,12 @@ describe('Company Group test', () => {
       expect(companyGroupUpdate.description).toEqual(companyGroupMock.description)
     })
   })
+
+  describe('get all tests', () => {
+    test('getAll', async () => {
+      const query = {}
+
+      await companyGroupDomain.companyGroup_GetAll(query)
+    })
+  })
 })
