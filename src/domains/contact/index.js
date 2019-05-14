@@ -9,11 +9,9 @@ const Contact = database.model('contact')
 
 
 
-
-
 class ContactDomain {
   // eslint-disable-next-line camelcase
-  async contact_Create(bodyData, options = {}) {
+  async create(bodyData, options = {}) {
     const { transaction = null } = options
 
     const contact = R.omit(['id'], bodyData)
@@ -31,10 +29,10 @@ class ContactDomain {
       }])
     }
 
-    if (!/^[a-zA-Z0-9\s.áàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ-]+$/.test(contact.name)) {
+    if (!/^[\w\s.áàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ-]+$/.test(contact.name)) {
       throw new FieldValidationError([{
         field: 'name',
-        message: 'name invalid',
+        message: 'type only letter and numbers',
       }])
     }
 
@@ -48,7 +46,7 @@ class ContactDomain {
     }
 
     const {email} = contact
-    var er = new RegExp(/^[A-Za-z0-9_\-\.]+@[A-Za-z0-9_\-\.]{2,}\.[A-Za-z0-9]{2,}(\.[A-Za-z0-9])?/)
+    var er = new RegExp(/^[\w_\-\.]+@[\w_\-\.]{2,}\.[\w]{2,}(\.[\w])?/)
 
     if (!er.test(email) || er.test(email.value)) {
       throw new FieldValidationError([{

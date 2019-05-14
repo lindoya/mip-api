@@ -12,7 +12,7 @@ const formatQuery = require('../../../helpers/lazyLoad')
 
 class CompanyGroupDomain {
   // eslint-disable-next-line camelcase
-  async companyGroup_Create(bodyData, options = {}) {
+  async create(bodyData, options = {}) {
     const { transaction = null } = options
 
     const companyGroup = R.omit(['id'], bodyData)
