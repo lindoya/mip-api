@@ -7,7 +7,7 @@ const Address = database.model('address')
 
 module.exports = class AddressDomain {
   // eslint-disable-next-line camelcase
-  async address_Create(addressData, options = {}) {
+  async create(addressData, options = {}) {
     const { transaction } = options
 
     const address = R.omit([
@@ -25,7 +25,8 @@ module.exports = class AddressDomain {
       }])
     }
 
-    if (!/^[a-zA-Z0-9\s.áàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ]+$/.test(address.street)) {
+    // eslint-disable-next-line no-useless-escape
+    if (!/^[\w\s\.À-ú]+$/.test(address.street)) {
       throw new FieldValidationError([{
         field: 'street',
         message: 'type only letter and numbers',
@@ -58,7 +59,8 @@ module.exports = class AddressDomain {
       }])
     }
 
-    if (!/^[a-zA-Z0-9\s.áàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ]+$/.test(address.city)) {
+    // eslint-disable-next-line no-useless-escape
+    if (!/^[\w\s\.À-ú]+$/.test(address.city)) {
       throw new FieldValidationError([{
         field: 'city',
         message: 'type only letter and numbers',
@@ -73,7 +75,8 @@ module.exports = class AddressDomain {
       }])
     }
 
-    if (!/^[a-zA-Z0-9\s.áàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ]+$/.test(address.state)) {
+    // eslint-disable-next-line no-useless-escape
+    if (!/^[\w\s\.À-ú]+$/.test(address.state)) {
       throw new FieldValidationError([{
         field: 'state',
         message: 'type only letter and numbers',
@@ -88,7 +91,8 @@ module.exports = class AddressDomain {
       }])
     }
 
-    if (!/^[a-zA-Z0-9\s.áàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ]+$/.test(address.neighborhood)) {
+    // eslint-disable-next-line no-useless-escape
+    if (!/^[\w\s\.À-ú]+$/.test(address.neighborhood)) {
       throw new FieldValidationError([{
         field: 'neighborhood',
         message: 'type only letter and numbers',
@@ -103,23 +107,20 @@ module.exports = class AddressDomain {
         message: 'zipCode cannot be null',
       }])
     }
- 
+
     const { zipCode } = address
 
-    if (/^\s$/.test(zipCode)){
+    if (/^\s$/.test(zipCode)) {
       throw new FieldValidationError([{
         field: 'zipCode',
         message: 'cannot contains space',
       }])
+    } else if (!/^[0-9]{8}$/.test(zipCode)) {
+      throw new FieldValidationError([{
+        field: 'zipCode',
+        message: 'zipCode is invalid',
+      }])
     }
-      else if (!/^[0-9]{8}$/.test(zipCode)) {
-        throw new FieldValidationError([{
-          field: 'zipCode',
-          message: 'zipCode is invalid',
-        }])
-      }
-    
-      
 
     const createdAddress = await Address.create(address, { transaction })
 
