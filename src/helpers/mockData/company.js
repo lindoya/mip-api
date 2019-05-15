@@ -1,21 +1,33 @@
 const faker = require('faker')
 
+const { generateAddress } = require('../../helpers/mockData/address')
+
 const cnpjs = [
-  '40.190.041/0001-02',
-  '32.478.461/0001-60',
-  '75.460.221/0001-41',
-  '86.419.666/0001-02',
-  '54.236.845/0001-00',
-  '31.796.778/0001-82',
-  '67.238.587/0001-42',
-  '38.734.326/0001-15',
-  '03.487.135/0001-11',
-  '17.276.186/0001-09',
-  '58.139.342/0001-77',
-  '11.267.253/0001-42',
-  '98.409.787/0001-44',
-  '43.216.467/0001-86',
-  '58.484.370/0001-21',
+  '40190041000102',
+  '32478461000160',
+  '75460221000141',
+  '86419666000102',
+  '54236845000100',
+  '31796778000182',
+  '67238587000142',
+  '38734326000115',
+  '03487135000111',
+  '17276186000109',
+  '58139342000177',
+  '11267253000142',
+  '98409787000144',
+  '43216467000186',
+  '58484370000121',
+  '60618092000108',
+  '14355513000120',
+  '43339443000114',
+  '86857981000103',
+  '23840780000183',
+  '61073043000191',
+  '61703219000141',
+  '29787696000120',
+  '04826644000194',
+  '25691104000110',
 ]
 
 
@@ -28,14 +40,19 @@ const generateCompanyGroup = () => {
 }
 
 const generateCompany = (counter) => {
+  const couterStr = counter.toString()
   const company = {
     type: 'master',
-    razaoSocial: `${faker.company.companyName()} LTDA ${counter}`,
-    name: `companyName${counter}`,
+    cnpj: cnpjs[counter],
+    razaoSocial: `${faker.company.companyName()} LTDA ${couterStr}`,
+    name: `companyName${couterStr}`,
     stateRegistration: '123123123',
+    address: generateAddress(),
   }
+  return company
 }
 
 module.exports = {
   generateCompanyGroup,
+  generateCompany,
 }

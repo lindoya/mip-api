@@ -1,4 +1,5 @@
 const R = require('ramda')
+const moment = require('moment')
 const { isUUID } = require('validator')
 
 const { FieldValidationError } = require('../../../helpers/errors')
@@ -12,7 +13,7 @@ const formatQuery = require('../../../helpers/lazyLoad')
 
 class CompanyGroupDomain {
   // eslint-disable-next-line camelcase
-  async companyGroup_Create(bodyData, options = {}) {
+  async create(bodyData, options = {}) {
     const { transaction = null } = options
 
     const companyGroup = R.omit(['id'], bodyData)
@@ -172,10 +173,21 @@ class CompanyGroupDomain {
       const qntComp = qntCompList[index]
       const row = rows[index]
 
+      // console.log(row.createdAt)
+
+      const formatdate = (date) => {
+        const formatDate = moment(date).subtract(10, 'days').calendar()
+        const formatHours = moment(date).format('LTS')
+        const dateformated = `${formatDate} ${formatHours}`
+        return dateformated
+      }
+
+      console.log(formatdate(row.createdAt))
+
       companyGroupsList.push({
         groupName: row.groupName,
         description: row.description,
-        createdAt: row.createdAt,
+        createdAt: formatdate(row.createdAt),
         deletedAt: row.deletedAt,
         qntComp,
       })

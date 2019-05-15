@@ -19,7 +19,7 @@ describe('contact-domain', () => {
     test('create contact with correct date', async () => {
       const contactMock = contactMockGenerated
 
-      const contactCreated = await contactDomain.contact_Create(contactMock)
+      const contactCreated = await contactDomain.create(contactMock)
 
       expect(contactCreated.name).toEqual(contactMock.name)
       expect(contactCreated.email).toEqual(contactMock.email)
@@ -31,7 +31,7 @@ describe('contact-domain', () => {
       const chipMock = contactMockGenerated
       chipMock.name = ''
 
-      await expect(contactDomain.contact_Create(chipMock)).rejects
+      await expect(contactDomain.create(chipMock)).rejects
         .toThrowError(new FieldValidationError([{
           field: 'name',
           message: 'name cannot be null',
@@ -41,7 +41,7 @@ describe('contact-domain', () => {
     test('try add contact without name', async () => {
       const chipMock = R.omit(['name'], contactMockGenerated)
 
-      await expect(contactDomain.contact_Create(chipMock)).rejects
+      await expect(contactDomain.create(chipMock)).rejects
         .toThrowError(new FieldValidationError([{
           field: 'name',
           message: 'name cannot be null',
@@ -52,7 +52,7 @@ describe('contact-domain', () => {
       const chipMock = contactMockGenerated
       chipMock.email = ''
 
-      await expect(contactDomain.contact_Create(chipMock)).rejects
+      await expect(contactDomain.create(chipMock)).rejects
         .toThrowError(new FieldValidationError([{
           field: 'email',
           message: 'email cannot be null',
@@ -62,18 +62,32 @@ describe('contact-domain', () => {
     test('try add contact omiting email', async () => {
       const chipMock = R.omit(['email'], contactMockGenerated)
 
-      await expect(contactDomain.contact_Create(chipMock)).rejects
+      await expect(contactDomain.create(chipMock)).rejects
         .toThrowError(new FieldValidationError([{
           field: 'email',
           message: 'email cannot be null',
         }]))
     })
 
+    test('try add contact without email invalid', async () => {
+      const chipMock = {
+        ...contactMockGenerated,
+        email: 'realponto@hotmail'
+      }
+
+      await expect(contactDomain.create(chipMock)).rejects
+        .toThrowError(new FieldValidationError([{
+          field: 'email',
+          message: 'email is invalid',
+        }]))
+    })
+
+
     test('try add contact with phone null', async () => {
       const chipMock = contactMockGenerated
       chipMock.phone = ''
 
-      await expect(contactDomain.contact_Create(chipMock)).rejects
+      await expect(contactDomain.create(chipMock)).rejects
         .toThrowError(new FieldValidationError([{
           field: 'phone',
           message: 'phone cannot be null',
@@ -84,14 +98,14 @@ describe('contact-domain', () => {
       const chipMock = contactMockGenerated
       chipMock.phone = '132awdawd31daw3d1'
 
-      await expect(contactDomain.contact_Create(chipMock)).rejects
+      await expect(contactDomain.create(chipMock)).rejects
         .toThrowError()
     })
 
     test('try add contact omiting phone', async () => {
       const chipMock = R.omit(['phone'], contactMockGenerated)
 
-      await expect(contactDomain.contact_Create(chipMock)).rejects
+      await expect(contactDomain.create(chipMock)).rejects
         .toThrowError(new FieldValidationError([{
           field: 'phone',
           message: 'phone cannot be null',
@@ -106,7 +120,7 @@ describe('contact-domain', () => {
     beforeEach(async () => {
       const chipMock = generateContact(counter.toString())
       counter += 1
-      chipMockGenerated = await contactDomain.contact_Create(chipMock)
+      chipMockGenerated = await contactDomain.create(chipMock)
     })
 
     test('get contact by id with correct date', async () => {
@@ -142,7 +156,7 @@ describe('contact-domain', () => {
     beforeEach(async () => {
       const contactMock = generateContact(counter.toString())
       counter += 1
-      contactCreated = await contactDomain.contact_Create(contactMock)
+      contactCreated = await contactDomain.create(contactMock)
     })
 
     test('update contact by id with only name', async () => {

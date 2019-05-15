@@ -20,7 +20,7 @@ describe('Company Group test', () => {
     test('create company group with correct date', async () => {
       const companyGroupMock = companyGroupMockGenerated
 
-      const companyGroupCreated = await companyGroupDomain.companyGroup_Create(companyGroupMock)
+      const companyGroupCreated = await companyGroupDomain.create(companyGroupMock)
 
 
       expect(companyGroupCreated.groupName).toEqual(companyGroupMock.groupName)
@@ -30,11 +30,11 @@ describe('Company Group test', () => {
     test('try add company group with groupName existent', async () => {
       const companyGroupMock = companyGroupMockGenerated
 
-      const companyGroupCreated = await companyGroupDomain.companyGroup_Create(companyGroupMock)
+      const companyGroupCreated = await companyGroupDomain.create(companyGroupMock)
 
       await expect(companyGroupCreated.groupName).toEqual(companyGroupMock.groupName)
 
-      await expect(companyGroupDomain.companyGroup_Create(companyGroupMock)).rejects
+      await expect(companyGroupDomain.create(companyGroupMock)).rejects
         .toThrowError(new FieldValidationError([{
           field: 'groupName',
           message: 'groupName already exist',
@@ -45,7 +45,7 @@ describe('Company Group test', () => {
       const companyGroupMock = companyGroupMockGenerated
       companyGroupMock.groupName = ''
 
-      await expect(companyGroupDomain.companyGroup_Create(companyGroupMock)).rejects
+      await expect(companyGroupDomain.create(companyGroupMock)).rejects
         .toThrowError(new FieldValidationError([{
           field: 'groupName',
           message: 'groupName cannot be null',
@@ -55,7 +55,7 @@ describe('Company Group test', () => {
     test('try add company group without groupName', async () => {
       const companyGroupMock = R.omit(['groupName'], companyGroupMockGenerated)
 
-      await expect(companyGroupDomain.companyGroup_Create(companyGroupMock)).rejects
+      await expect(companyGroupDomain.create(companyGroupMock)).rejects
         .toThrowError(new FieldValidationError([{
           field: 'groupName',
           message: 'groupName cannot be null',
@@ -66,7 +66,7 @@ describe('Company Group test', () => {
       const companyGroupMock = companyGroupMockGenerated
       companyGroupMock.description = ''
 
-      await expect(companyGroupDomain.companyGroup_Create(companyGroupMock)).rejects
+      await expect(companyGroupDomain.create(companyGroupMock)).rejects
         .toThrowError(new FieldValidationError([{
           field: 'description',
           message: 'description cannot be null',
@@ -76,7 +76,7 @@ describe('Company Group test', () => {
     test('try add company group without description', async () => {
       const companyGroupMock = R.omit(['description'], companyGroupMockGenerated)
 
-      await expect(companyGroupDomain.companyGroup_Create(companyGroupMock)).rejects
+      await expect(companyGroupDomain.create(companyGroupMock)).rejects
         .toThrowError(new FieldValidationError([{
           field: 'description',
           message: 'description cannot be null',
@@ -91,7 +91,7 @@ describe('Company Group test', () => {
     beforeEach(async () => {
       const companyGroupMock = generateCompanyGroup(counter.toString())
       counter += 1
-      companyGroupMockGenerated = await companyGroupDomain.companyGroup_Create(companyGroupMock)
+      companyGroupMockGenerated = await companyGroupDomain.create(companyGroupMock)
     })
 
     test('get company group by id with correct date', async () => {
@@ -126,7 +126,7 @@ describe('Company Group test', () => {
     beforeEach(async () => {
       const companyGroupMock = generateCompanyGroup(counter.toString())
       counter += 1
-      companyGroupMockGenerated = await companyGroupDomain.companyGroup_Create(companyGroupMock)
+      companyGroupMockGenerated = await companyGroupDomain.create(companyGroupMock)
     })
 
     test('update company group by id with only groupName', async () => {
@@ -144,7 +144,7 @@ describe('Company Group test', () => {
       const companyGroupMock = generateCompanyGroup('599')
       companyGroupMock.groupName = companyGroupMockGenerated.groupName
 
-      await expect(companyGroupDomain.companyGroup_Create(companyGroupMock)).rejects
+      await expect(companyGroupDomain.create(companyGroupMock)).rejects
         .toThrowError(new FieldValidationError([{
           field: 'groupName',
           message: 'groupName already exist',

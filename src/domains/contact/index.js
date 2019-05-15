@@ -7,9 +7,11 @@ const database = require('../../database')
 
 const Contact = database.model('contact')
 
+
+
 class ContactDomain {
   // eslint-disable-next-line camelcase
-  async contact_Create(bodyData, options = {}) {
+  async create(bodyData, options = {}) {
     const { transaction = null } = options
 
     const contact = R.omit(['id'], bodyData)
@@ -27,6 +29,15 @@ class ContactDomain {
       }])
     }
 
+    if (!/^[\w\s.áàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ-]+$/.test(contact.name)) {
+      throw new FieldValidationError([{
+        field: 'name',
+        message: 'type only letter and numbers',
+      }])
+    }
+
+    
+
     if (!HasEmail || !contact.email) {
       throw new FieldValidationError([{
         field: 'email',
@@ -34,10 +45,30 @@ class ContactDomain {
       }])
     }
 
+    const {email} = contact
+    var er = new RegExp(/^[\w_\-\.]+@[\w_\-\.]{2,}\.[\w]{2,}(\.[\w])?/)
+
+    if (!er.test(email) || er.test(email.value)) {
+      throw new FieldValidationError([{
+        field: 'email',
+        message: 'email is inválid',
+      }])
+    }
+
+
     if (!HasPhone || !contact.phone) {
       throw new FieldValidationError([{
         field: 'phone',
         message: 'phone cannot be null',
+      }])
+    }
+
+    const {phone} = contact
+
+    if (!/^[0-9]{10,11}$/.test(phone)) {
+      throw new FieldValidationError([{
+        field: 'phone',
+        message: 'phone is inválid',
       }])
     }
 

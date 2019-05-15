@@ -9,23 +9,22 @@ const AddressDomain = require('../../address')
 const Comapany = database.model('company')
 const ComapanyGroup = database.model('companyGroup')
 const Address = database.model('address')
-const CompanyContact = database.model('companyContact')
+// const CompanyContact = database.model('companyContact')
 const Contact = database.model('contact')
 
 const addressDomain = new AddressDomain()
 
-class companyDomain {
-  // eslint-disable-next-line camelcase
-  async company_Create(bodyData, options = {}) {
+module.exports = class companyDomain {
+  async create(bodyData, options = {}) {
     const { transaction = null } = options
 
     let company = R.omit(['id', 'address'], bodyData)
 
     // eslint-disable-next-line no-underscore-dangle
-    const companyNotHas = R.not(R.has(R.__, company))
+    const companyNotHas = prop => R.not(R.has(prop, company))
 
 
-    if (companyNotHas('address')) {
+    if (R.not(R.has('address', bodyData))) {
       throw new FieldValidationError([{
         field: 'address',
         message: 'address cannot be null',
@@ -36,9 +35,9 @@ class companyDomain {
 
     // type Validations
     if (companyNotHas('type')
-          || company.type !== 'unit'
-          || company.type !== 'master'
-          || company.type !== 'branch') {
+          || (company.type !== 'unit'
+          && company.type !== 'master'
+          && company.type !== 'branch')) {
       throw new FieldValidationError([{
         field: 'type',
         message: 'type need is a valid value',
@@ -66,6 +65,15 @@ class companyDomain {
       }
     }
 
+
+    // eslint-disable-next-line no-useless-escape
+    if (!/^[\w\s\.À-ú\/\(\)\,\'\-]+$/.test(company.razaoSocial)) {
+      throw new FieldValidationError([{
+        field: 'razaoSocial',
+        message: 'razaoSocial invalid',
+      }])
+    }
+
     // name Validations
     if (companyNotHas('name') || !company.name) {
       throw new FieldValidationError([{
@@ -84,6 +92,14 @@ class companyDomain {
           message: 'name already exists',
         }])
       }
+    }
+
+    // eslint-disable-next-line no-useless-escape
+    if (!/^[\w\s\.À-ú]+$/.test(company.name)) {
+      throw new FieldValidationError([{
+        field: 'name',
+        message: 'name invalid',
+      }])
     }
 
 
@@ -131,28 +147,56 @@ class companyDomain {
       }
     }
 
-    await addressDomain.add(address, { transaction })
+    // validation companyGroup
+    if (company.type === 'branch' || company.type === 'unit') {
+      company = {
+        ...company,
+        companyGroupId: null,
+      }
+    } else if (company.type === 'master') {
+      if (companyNotHas('companyGroupId') || !company.companyGroupId) {
+        const nogroup = await ComapanyGroup.findOne({
+          where: {
+            groupName: 'Sem grupo',
+          },
+        })
 
-    const companyCreated = await Comapany.create(company, { transaction })
+        company = {
+          ...company,
+          companyGroupId: nogroup.id,
+        }
+      }
+    }
+
+    const addresCreated = await addressDomain.create(address, { transaction })
+
+    const companyFormatted = {
+      ...company,
+      addressId: addresCreated.id,
+    }
+
+    const companyCreated = await Comapany.create(companyFormatted, { transaction })
 
     const response = await Comapany.findByPk(companyCreated.id, {
-      include: [{
-        model: ComapanyGroup,
-      },
-      {
-        model: Address,
-      },
-      {
-        model: CompanyContact,
-        include: [{
-          model: Contact,
-        }],
-      }],
+      include: [
+        {
+          model: ComapanyGroup,
+        },
+        {
+          model: Address,
+        },
+        // {
+        //   model: CompanyContact,
+        //   include: [{
+        //     model: Contact,
+        //   }],
+        // },
+      ],
       transaction,
     })
+
+    // console.log(JSON.stringify(response))
 
     return response
   }
 }
-
-export default companyDomain
