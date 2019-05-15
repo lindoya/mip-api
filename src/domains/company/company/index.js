@@ -67,7 +67,7 @@ module.exports = class companyDomain {
 
 
     // eslint-disable-next-line no-useless-escape
-    if (!/^[\w\s\.À-ú\/\(\)\,\-]+$/.test(company.razaoSocial)) {
+    if (!/^[\w\s\.À-ú\/\(\)\,\'\-]+$/.test(company.razaoSocial)) {
       throw new FieldValidationError([{
         field: 'razaoSocial',
         message: 'razaoSocial invalid',
@@ -147,6 +147,27 @@ module.exports = class companyDomain {
       }
     }
 
+    // validation companyGroup
+    if (company.type === 'branch' || company.type === 'unit') {
+      company = {
+        ...company,
+        companyGroupId: null,
+      }
+    } else if (company.type === 'master') {
+      if (companyNotHas('companyGroupId') || !company.companyGroupId) {
+        const nogroup = await ComapanyGroup.findOne({
+          where: {
+            groupName: 'Sem grupo',
+          },
+        })
+
+        company = {
+          ...company,
+          companyGroupId: nogroup.id,
+        }
+      }
+    }
+
     const addresCreated = await addressDomain.create(address, { transaction })
 
     const companyFormatted = {
@@ -173,6 +194,8 @@ module.exports = class companyDomain {
       ],
       transaction,
     })
+
+    // console.log(JSON.stringify(response))
 
     return response
   }

@@ -177,8 +177,61 @@ describe('tests about company domain: ', () => {
           message: 'cnpj is invalid',
         }]))
     })
+
+    test('type of unit does not have company group', async () => {
+      const companyMock = {
+        ...companyMockGenerated,
+        type: 'unit',
+      }
+
+      const companyCreated = await companyDomain.create(companyMock)
+
+
+      expect(companyCreated.companyGroupId).toBe(null)
+    })
+
+    test('type of branch does not have company group', async () => {
+      const companyMock = {
+        ...companyMockGenerated,
+        type: 'branch',
+      }
+
+      const companyCreated = await companyDomain.create(companyMock)
+
+
+      expect(companyCreated.companyGroupId).toBe(null)
+    })
+
+    test('', async () => {
+      const companyMock = {
+        ...companyMockGenerated,
+        type: 'master',
+        companyGroupId: '',
+      }
+
+      const companyCreated = await companyDomain.create(companyMock)
+
+
+      expect(companyCreated.companyGroupId).toBeTruthy()
+    })
+
+    test('', async () => {
+      const companyMock = {
+        ...companyMockGenerated,
+        type: 'master',
+      }
+      const chipMock = R.omit(['companyGroupId'], companyMock)
+      // console.log(companyMock)
+
+      const companyCreated = await companyDomain.create(chipMock)
+
+      // console.log(JSON.stringify(companyCreated.companyGroupId))
+
+      expect(companyCreated.companyGroupId).toBeTruthy()
+    })
   })
 })
+
 
 // let addressMock = null
 // let createdAddress = null
