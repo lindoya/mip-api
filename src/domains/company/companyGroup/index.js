@@ -176,19 +176,18 @@ class CompanyGroupDomain {
       // console.log(row.createdAt)
 
       const formatdate = (date) => {
-        const formatDate = moment(date).subtract(10, 'days').calendar()
-        const formatHours = moment(date).format('LTS')
+        moment.locale('pt-br')
+        const formatDate = moment(date).format('L')
+        const formatHours = moment(date).format('LT')
         const dateformated = `${formatDate} ${formatHours}`
         return dateformated
       }
-
-      console.log(formatdate(row.createdAt))
 
       companyGroupsList.push({
         groupName: row.groupName,
         description: row.description,
         createdAt: formatdate(row.createdAt),
-        deletedAt: row.deletedAt,
+        deletedAt: formatdate(row.deletedAt),
         qntComp,
       })
     }
