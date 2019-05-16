@@ -16,56 +16,59 @@ class ContactDomain {
 
     const contact = R.omit(['id'], bodyData)
 
-    const HasName = R.has(['name'], contact)
+    const contactNotHas = prop => R.not(R.has(prop, contact))
 
-    const HasEmail = R.has(['email'], contact)
 
-    const HasPhone = R.has(['phone'], contact)
-
-    if (!HasName || !contact.name) {
+    if (contactNotHas('name') || !contact.name) {
       throw new FieldValidationError([{
         field: 'name',
         message: 'name cannot be null',
       }])
     }
 
-    if (!/^[\w\s.áàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ-]+$/.test(contact.name)) {
+    if (!/^[\w\s\.À-ú\-]+$/.test(contact.name)) {
       throw new FieldValidationError([{
         field: 'name',
         message: 'type only letter and numbers',
       }])
     }
 
-    
-
-    if (!HasEmail || !contact.email) {
+    if (contactNotHas('email') || !contact.email) {
       throw new FieldValidationError([{
         field: 'email',
         message: 'email cannot be null',
       }])
     }
 
-    const {email} = contact
-    var er = new RegExp(/^[\w_\-\.]+@[\w_\-\.]{2,}\.[\w]{2,}(\.[\w])?/)
-
-    if (!er.test(email) || er.test(email.value)) {
+    if (!/^[\w_\-\.]+@[\w_\-\.]{2,}\.[\w]{2,}(\.[\w])?/.test(contact.email)) {
       throw new FieldValidationError([{
         field: 'email',
         message: 'email is inválid',
       }])
     }
 
+    if (contactNotHas('position') || !contact.position) {
+      throw new FieldValidationError([{
+        field: 'position',
+        message: 'position cannot be null',
+      }])
+    }
 
-    if (!HasPhone || !contact.phone) {
+    if (!/^[\w\s\.À-ú\-]+$/.test(contact.position)) {
+      throw new FieldValidationError([{
+        field: 'position',
+        message: 'type only letter and numbers',
+      }])
+    }
+
+    if (contactNotHas('phone') || !contact.phone) {
       throw new FieldValidationError([{
         field: 'phone',
         message: 'phone cannot be null',
       }])
     }
 
-    const {phone} = contact
-
-    if (!/^[0-9]{10,11}$/.test(phone)) {
+    if (!/^[0-9]{10,11}$/.test(contact.phone)) {
       throw new FieldValidationError([{
         field: 'phone',
         message: 'phone is inválid',
@@ -115,29 +118,26 @@ class ContactDomain {
 
     const contact = R.omit(['id'], bodyData)
 
-    const hasName = R.has('name', contact)
+    const contactHas = prop => R.has(prop, contact)
 
-    const hasEmail = R.has('email', contact)
-
-    const hasPhone = R.has('phone', contact)
 
     let newContact = {}
 
-    if (hasName) {
+    if (contactHas('name')) {
       newContact = {
         ...newContact,
         name: R.prop('name', contact),
       }
     }
 
-    if (hasEmail) {
+    if (contactHas('email')) {
       newContact = {
         ...newContact,
         email: R.prop('email', contact),
       }
     }
 
-    if (hasPhone) {
+    if (contactHas('phone')) {
       newContact = {
         ...newContact,
         phone: R.prop('phone', contact),
