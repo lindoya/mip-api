@@ -1,6 +1,7 @@
 const R = require('ramda')
 const moment = require('moment')
 const { isUUID } = require('validator')
+const Cnpj = require('@fnando/cnpj/dist/node')
 
 const { FieldValidationError } = require('../../../helpers/errors')
 
@@ -18,11 +19,9 @@ class CompanyGroupDomain {
 
     const companyGroup = R.omit(['id'], bodyData)
 
-    const hasGroupName = R.has('groupName', companyGroup)
+    const companyGorupNotHas = prop => R.not(R.has(prop, companyGroup))
 
-    const hasDescription = R.has('description', companyGroup)
-
-    if (!hasGroupName || !companyGroup.groupName) {
+    if (companyGorupNotHas('groupName') || !companyGroup.groupName) {
       throw new FieldValidationError([{
         field: 'groupName',
         message: 'groupName cannot be null exist',
@@ -43,10 +42,44 @@ class CompanyGroupDomain {
       }])
     }
 
-    if (!hasDescription || !companyGroup.description) {
+    if (companyGorupNotHas('description') || !companyGroup.description) {
       throw new FieldValidationError([{
         field: 'description',
         message: 'description cannot be null exist',
+      }])
+    }
+
+    if (companyGorupNotHas('cnpj') || !companyGroup.cnpj) {
+      throw new FieldValidationError([{
+        field: 'cnpj',
+        message: 'cnpj cannot be null exist',
+      }])
+    }
+
+    if (!Cnpj.isValid(companyGroup.cnpj)) {
+      throw new FieldValidationError([{
+        field: 'cnpj',
+        message: 'cnpj is invalid',
+      }])
+    }
+
+    const companyGroupReturnedCnpj = await CompanyGroup.findOne({
+      where: {
+        cnpj: companyGroup.cnpj,
+      },
+      transaction,
+    })
+    const companyReturned = await Company.findOne({
+      where: {
+        cnpj: companyGroup.cnpj,
+      },
+      transaction,
+    })
+
+    if (companyGroupReturnedCnpj || companyReturned) {
+      throw new FieldValidationError([{
+        field: 'cnpj',
+        message: 'cnpj already exist',
       }])
     }
 

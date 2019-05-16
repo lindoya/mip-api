@@ -18,6 +18,11 @@ module.exports = (sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
+
+    cnpj: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
   })
 
   return companyGroup

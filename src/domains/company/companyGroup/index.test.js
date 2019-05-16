@@ -82,6 +82,19 @@ describe('Company Group test', () => {
           message: 'description cannot be null',
         }]))
     })
+
+    test('try add company without cnpj invalid', async () => {
+      const companyGroupMock = {
+        ...companyGroupMockGenerated,
+        cnpj: '1234567',
+      }
+
+      await expect(companyGroupDomain.create(companyGroupMock)).rejects
+        .toThrowError(new FieldValidationError([{
+          field: 'cnpj',
+          message: 'cnpj is invalid',
+        }]))
+    })
   })
 
   describe('getCompanyGroupByIdTest', () => {
