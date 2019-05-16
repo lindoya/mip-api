@@ -82,6 +82,34 @@ describe('contact-domain', () => {
         }]))
     })
 
+    test('try add contact with position null', async () => {
+      const chipMock = contactMockGenerated
+      chipMock.position = ''
+
+      await expect(contactDomain.create(chipMock)).rejects
+        .toThrowError(new FieldValidationError([{
+          field: 'position',
+          message: 'position cannot be null',
+        }]))
+    })
+
+    test('try add contact without position', async () => {
+      const chipMock = R.omit(['position'], contactMockGenerated)
+
+      await expect(contactDomain.create(chipMock)).rejects
+        .toThrowError(new FieldValidationError([{
+          field: 'position',
+          message: 'position cannot be null',
+        }]))
+    })
+
+    test('try add contact with position wrong', async () => {
+      const chipMock = contactMockGenerated
+      chipMock.position = 'M@rketing'
+
+      await expect(contactDomain.create(chipMock)).rejects
+        .toThrowError()
+    })
 
     test('try add contact with phone null', async () => {
       const chipMock = contactMockGenerated
