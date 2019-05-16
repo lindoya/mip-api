@@ -133,8 +133,19 @@ class CompanyGroupDomain {
   }
 
   // eslint-disable-next-line camelcase
-  async companyGroup_GetAll(query = null, options = {}) {
-    const { transaction = null } = options
+  async companyGroup_GetAll(options = {}) {
+    const inicialOrder = {
+      field: 'createdAt',
+      acendent: true,
+      direction: 'DESC',
+    }
+    const { query = null, order = inicialOrder, transaction = null } = options
+
+    if (order.acendent) {
+      order.direction = 'DESC'
+    } else {
+      order.direction = 'ASC'
+    }
 
     const {
       getWhere,
@@ -145,6 +156,9 @@ class CompanyGroupDomain {
 
     const grups = await CompanyGroup.findAndCountAll({
       where: getWhere('companyGroup'),
+      order: [
+        [order.field, order.direction],
+      ],
       limit,
       offset,
       transaction,
