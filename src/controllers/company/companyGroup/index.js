@@ -9,8 +9,10 @@ const getAllComanyGroup = async (req, res, next) => {
   try {
     const { query } = req.params
 
+    const order = JSON.parse(req.query.order)
+
     const companyGroupList = await companyGroupDomain
-      .companyGroup_GetAll(query, { transaction })
+      .companyGroup_GetAll({ query, order, transaction })
 
     await transaction.commit()
     res.json(companyGroupList)

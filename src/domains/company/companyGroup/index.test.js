@@ -167,7 +167,7 @@ describe('Company Group test', () => {
     test('getAll', async () => {
       const query = {}
 
-      await companyGroupDomain.companyGroup_GetAll(query)
+      await companyGroupDomain.companyGroup_GetAll({ query })
     })
   })
 })
