@@ -18,7 +18,21 @@ module.exports = (sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
+
+    cnpj: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
   })
+
+  companyGroup.associate = (models) => {
+    companyGroup.belongsTo(models.address, {
+      foreignKey: {
+        allowNull: true,
+      },
+    })
+  }
+
 
   return companyGroup
 }
