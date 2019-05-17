@@ -1,19 +1,29 @@
 const R = require('ramda')
 
 const { generateCompany } = require('../../../helpers/mockData/company')
-const CompanyDomain = require('./index')
+const { generateCompanyGroup } = require('../../../helpers/mockData/company')
+const CompanyDomain = require('../company')
+const CompanyGroupDomain = require('../companyGroup')
 const { FieldValidationError } = require('../../../helpers/errors')
 
 const companyDomain = new CompanyDomain()
+const companyGroupDomain = new CompanyGroupDomain()
+
 
 describe('tests about company domain: ', () => {
   describe('create tests: ', async () => {
     let companyMockGenerated = {}
-    let counter = 1
+    let companyGroupMockGenerated = {}
+    let companyCounter = 1
+    let companyGroupCounter = 1
 
     beforeEach(() => {
-      companyMockGenerated = generateCompany(counter)
-      counter += 1
+      companyGroupMockGenerated = generateCompanyGroup(companyGroupCounter.toString())
+      companyGroupCounter += 1
+    })
+    beforeEach(() => {
+      companyMockGenerated = generateCompany(companyCounter)
+      companyCounter += 1
     })
 
     test('should add a new company', async () => {
@@ -175,6 +185,35 @@ describe('tests about company domain: ', () => {
         .toThrowError(new FieldValidationError([{
           field: 'cnpj',
           message: 'cnpj is invalid',
+        }]))
+    })
+
+    test('try to create two companies as the same cnpj', async () => {
+      await companyDomain.create(companyMockGenerated)
+
+      await expect(companyDomain.create(companyMockGenerated)).rejects
+        .toThrowError(new FieldValidationError([{
+          field: 'cnpj',
+          message: 'cnpj already exists',
+        }]))
+    })
+
+    test('try to create a company with cnpj already registered in a companyGroup', async () => {
+      const chipMock1 = {
+        ...companyGroupMockGenerated,
+        cnpj: '18731118000155',
+      }
+      const chipMock2 = {
+        ...companyMockGenerated,
+        cnpj: '18731118000155',
+      }
+
+      await companyGroupDomain.create(chipMock1)
+
+      await expect(companyDomain.create(chipMock2)).rejects
+        .toThrowError(new FieldValidationError([{
+          field: 'cnpj',
+          message: 'cnpj already exists',
         }]))
     })
 
