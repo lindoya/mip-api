@@ -260,11 +260,8 @@ describe('tests about company domain: ', () => {
         type: 'master',
       }
       const chipMock = R.omit(['companyGroupId'], companyMock)
-      // console.log(companyMock)
 
       const companyCreated = await companyDomain.create(chipMock)
-
-      // console.log(JSON.stringify(companyCreated.companyGroupId))
 
       expect(companyCreated.companyGroupId).toBeTruthy()
     })

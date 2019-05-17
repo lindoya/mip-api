@@ -69,8 +69,6 @@ class CompanyGroupDomain {
         transaction,
       })
 
-      // console.log(companyCnpjExixtente)
-
       const companyGroupCnpjExixtente = await CompanyGroup.findOne({
         where: { cnpj: companyGroup.cnpj },
         transaction,
