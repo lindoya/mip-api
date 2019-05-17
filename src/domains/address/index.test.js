@@ -53,18 +53,18 @@ describe('tests about address domain: ', () => {
         }]))
     })
 
-    test('try add address without street invalid', async () => {
-      const chipMock = {
-        ...addressMockGenerated,
-        street: 'Av. Sod@',
-      }
+    // test('try add address without street invalid', async () => {
+    //   const chipMock = {
+    //     ...addressMockGenerated,
+    //     street: 'Av. Sod@',
+    //   }
 
-      await expect(addressDomain.create(chipMock)).rejects
-        .toThrowError(new FieldValidationError([{
-          field: 'street',
-          message: 'street is invalid',
-        }]))
-    })
+    //   await expect(addressDomain.create(chipMock)).rejects
+    //     .toThrowError(new FieldValidationError([{
+    //       field: 'street',
+    //       message: 'street is invalid',
+    //     }]))
+    // })
 
 
     test('try add address with number null', async () => {
