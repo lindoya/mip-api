@@ -144,8 +144,6 @@ describe('Company Group test', () => {
         address: addressMockGenerated,
       }
 
-      console.log(JSON.stringify(addressMockGenerated))
-
       const companyGroupCreated = await companyGroupDomain.create(companyGroupMock)
 
       expect(companyGroupCreated.address.street).toBe(addressMockGenerated.street)
@@ -236,14 +234,6 @@ describe('Company Group test', () => {
 
       expect(companyGroupUpdate.groupName).toEqual(companyGroupMockGenerated.groupName)
       expect(companyGroupUpdate.description).toEqual(companyGroupMock.description)
-    })
-  })
-
-  describe('get all tests', () => {
-    test('getAll', async () => {
-      const query = {}
-
-      await companyGroupDomain.companyGroup_GetAll(query)
     })
   })
 })

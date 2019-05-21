@@ -238,8 +238,6 @@ class CompanyGroupDomain {
       const qntComp = qntCompList[index]
       const row = rows[index]
 
-      // console.log(row.createdAt)
-
       const formatdate = (date) => {
         moment.locale('pt-br')
         const formatDate = moment(date).format('L')
@@ -248,11 +246,20 @@ class CompanyGroupDomain {
         return dateformated
       }
 
+      const formatCnpj = (cnpj) => {
+        let cnpjformated = '-'
+        if (cnpj) {
+          cnpjformated = Cnpj.format(cnpj)
+        }
+        return cnpjformated
+      }
+
       companyGroupsList.push({
         groupName: row.groupName,
         description: row.description,
         createdAt: formatdate(row.createdAt),
         deletedAt: formatdate(row.deletedAt),
+        cnpj: formatCnpj(row.cnpj),
         qntComp,
       })
     }
