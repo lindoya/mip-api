@@ -14,16 +14,12 @@ describe('tests about company domain: ', () => {
   describe('create tests: ', async () => {
     let companyMockGenerated = {}
     let companyGroupMockGenerated = {}
-    let companyCounter = 1
-    let companyGroupCounter = 1
+    let counter = 1
 
     beforeEach(() => {
-      companyGroupMockGenerated = generateCompanyGroup(companyGroupCounter.toString())
-      companyGroupCounter += 1
-    })
-    beforeEach(() => {
-      companyMockGenerated = generateCompany(companyCounter)
-      companyCounter += 1
+      companyGroupMockGenerated = generateCompanyGroup(counter.toString())
+      companyMockGenerated = generateCompany(counter)
+      counter += 1
     })
 
     test('should add a new company', async () => {
