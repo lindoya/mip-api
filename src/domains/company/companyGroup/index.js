@@ -27,6 +27,7 @@ class CompanyGroupDomain {
 
     const companyGroupNotHas = prop => R.not(R.has(prop, companyGroup))
     const companyGroupHas = prop => R.has(prop, companyGroup)
+    const bodyDataHas = prop => R.has(prop, bodyData)
 
     if (companyGroupNotHas('groupName') || !companyGroup.groupName) {
       throw new FieldValidationError([{
@@ -87,7 +88,7 @@ class CompanyGroupDomain {
       addressId: null,
     }
 
-    if (companyGroupHas('address') && bodyData.address) {
+    if (bodyDataHas('address') && address) {
       const addresCreated = await addressDomain.create(address, { transaction })
 
       companyGroupFormatted = {
