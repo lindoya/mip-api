@@ -25,13 +25,13 @@ module.exports = class AddressDomain {
       }])
     }
 
-    // eslint-disable-next-line no-useless-escape
-    if (!/^[\w\s\.À-ú]+$/.test(address.street)) {
-      throw new FieldValidationError([{
-        field: 'street',
-        message: 'type only letter and numbers',
-      }])
-    }
+    // // eslint-disable-next-line no-useless-escape
+    // if (!/^[\w\s\.À-ú\-]+$/.test(address.street)) {
+    //   throw new FieldValidationError([{
+    //     field: 'street',
+    //     message: 'type only letter and numbers',
+    //   }])
+    // }
 
 
     // number Validations

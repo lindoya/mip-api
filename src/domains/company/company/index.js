@@ -6,11 +6,11 @@ const database = require('../../../database')
 
 const AddressDomain = require('../../address')
 
-const Comapany = database.model('company')
-const ComapanyGroup = database.model('companyGroup')
+const Company = database.model('company')
+const CompanyGroup = database.model('companyGroup')
 const Address = database.model('address')
 // const CompanyContact = database.model('companyContact')
-const Contact = database.model('contact')
+// const Contact = database.model('contact')
 
 const addressDomain = new AddressDomain()
 
@@ -52,7 +52,7 @@ module.exports = class companyDomain {
           message: 'razaoSocial cannot be null',
         }])
       }
-      const companyReturned = await Comapany.findOne({
+      const companyReturned = await Company.findOne({
         where: { razaoSocial: company.razaoSocial },
         transaction,
       })
@@ -81,7 +81,7 @@ module.exports = class companyDomain {
         message: 'name cannot be null',
       }])
     } else {
-      const companyReturned = await Comapany.findOne({
+      const companyReturned = await Company.findOne({
         where: { name: company.name },
         transaction,
       })
@@ -134,12 +134,17 @@ module.exports = class companyDomain {
         }])
       }
 
-      const companyReturned = await Comapany.findOne({
+      const companyCnpjExixtente = await Company.findOne({
         where: { cnpj: company.cnpj },
         transaction,
       })
 
-      if (companyReturned) {
+      const companyGroupCnpjExixtente = await CompanyGroup.findOne({
+        where: { cnpj: company.cnpj },
+        transaction,
+      })
+
+      if (companyCnpjExixtente || companyGroupCnpjExixtente) {
         throw new FieldValidationError([{
           field: 'cnpj',
           message: 'cnpj already exists',
@@ -155,7 +160,7 @@ module.exports = class companyDomain {
       }
     } else if (company.type === 'master') {
       if (companyNotHas('companyGroupId') || !company.companyGroupId) {
-        const nogroup = await ComapanyGroup.findOne({
+        const nogroup = await CompanyGroup.findOne({
           where: {
             groupName: 'Sem grupo',
           },
@@ -175,12 +180,12 @@ module.exports = class companyDomain {
       addressId: addresCreated.id,
     }
 
-    const companyCreated = await Comapany.create(companyFormatted, { transaction })
+    const companyCreated = await Company.create(companyFormatted, { transaction })
 
-    const response = await Comapany.findByPk(companyCreated.id, {
+    const response = await Company.findByPk(companyCreated.id, {
       include: [
         {
-          model: ComapanyGroup,
+          model: CompanyGroup,
         },
         {
           model: Address,

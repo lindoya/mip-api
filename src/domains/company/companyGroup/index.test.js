@@ -1,19 +1,28 @@
 const R = require('ramda')
 
+const { generateCompany } = require('../../../helpers/mockData/company')
 const { generateCompanyGroup } = require('../../../helpers/mockData/company')
-const CompanyGroupDomain = require('./')
+const { generateAddress } = require('../../../helpers/mockData/address')
+
+const CompanyDomain = require('../company')
+const CompanyGroupDomain = require('../companyGroup')
 
 const { FieldValidationError } = require('../../../helpers/errors')
 
+const companyDomain = new CompanyDomain()
 const companyGroupDomain = new CompanyGroupDomain()
 
 describe('Company Group test', () => {
   describe('create company group', () => {
+    let companyMockGenerated = {}
     let companyGroupMockGenerated = {}
+    let addressMockGenerated = {}
     let counter = 1
 
     beforeEach(() => {
       companyGroupMockGenerated = generateCompanyGroup(counter.toString())
+      companyMockGenerated = generateCompany(counter)
+      addressMockGenerated = generateAddress(counter.toString())
       counter += 1
     })
 
@@ -81,6 +90,71 @@ describe('Company Group test', () => {
           field: 'description',
           message: 'description cannot be null',
         }]))
+    })
+
+    test('try adding a company with invalid cnpj', async () => {
+      const chipMock = {
+        ...companyGroupMockGenerated,
+        cnpj: '1234567',
+      }
+
+      await expect(companyGroupDomain.create(chipMock)).rejects
+        .toThrowError(new FieldValidationError([{
+          field: 'cnpj',
+          message: 'cnpj is invalid',
+        }]))
+    })
+
+    test('try adding two companyGroups with the same cnpj', async () => {
+      const chipMock = {
+        ...companyGroupMockGenerated,
+        cnpj: '27522457000112',
+      }
+      await companyGroupDomain.create(chipMock)
+
+      await expect(companyGroupDomain.create(chipMock)).rejects
+        .toThrowError(new FieldValidationError([{
+          field: 'cnpj',
+          message: 'cnpj already exists',
+        }]))
+    })
+
+    test('try adding an existing cnpj with a company', async () => {
+      const chipMock1 = {
+        ...companyMockGenerated,
+        cnpj: '15640543000140',
+      }
+      const chipMock2 = {
+        ...companyGroupMockGenerated,
+        cnpj: '15640543000140',
+      }
+
+      await companyDomain.create(chipMock1)
+
+      await expect(companyGroupDomain.create(chipMock2)).rejects
+        .toThrowError(new FieldValidationError([{
+          field: 'cnpj',
+          message: 'cnpj already exists',
+        }]))
+    })
+
+    test('create companyGroup with correct address', async () => {
+      const companyGroupMock = {
+        ...companyGroupMockGenerated,
+        address: addressMockGenerated,
+      }
+
+      const companyGroupCreated = await companyGroupDomain.create(companyGroupMock)
+
+      expect(companyGroupCreated.address.street).toBe(addressMockGenerated.street)
+      expect(companyGroupCreated.address.number).toBe(addressMockGenerated.number)
+      expect(companyGroupCreated.address.complement).toBe(addressMockGenerated.complement)
+      expect(companyGroupCreated.address.city).toBe(addressMockGenerated.city)
+      expect(companyGroupCreated.address.state).toBe(addressMockGenerated.state)
+      expect(companyGroupCreated.address.neighborhood).toBe(addressMockGenerated.neighborhood)
+      expect(companyGroupCreated.address.referencePoint).toBe(addressMockGenerated.referencePoint)
+      expect(companyGroupCreated.address.zipCode).toBe(addressMockGenerated.zipCode)
+      expect(companyGroupCreated.address.id).toBe(companyGroupCreated.addressId)
     })
   })
 
@@ -160,14 +234,6 @@ describe('Company Group test', () => {
 
       expect(companyGroupUpdate.groupName).toEqual(companyGroupMockGenerated.groupName)
       expect(companyGroupUpdate.description).toEqual(companyGroupMock.description)
-    })
-  })
-
-  describe('get all tests', () => {
-    test('getAll', async () => {
-      const query = {}
-
-      await companyGroupDomain.companyGroup_GetAll({ query })
     })
   })
 })

@@ -1,17 +1,23 @@
 const R = require('ramda')
 
 const { generateCompany } = require('../../../helpers/mockData/company')
-const CompanyDomain = require('./index')
+const { generateCompanyGroup } = require('../../../helpers/mockData/company')
+const CompanyDomain = require('../company')
+const CompanyGroupDomain = require('../companyGroup')
 const { FieldValidationError } = require('../../../helpers/errors')
 
 const companyDomain = new CompanyDomain()
+const companyGroupDomain = new CompanyGroupDomain()
+
 
 describe('tests about company domain: ', () => {
   describe('create tests: ', async () => {
     let companyMockGenerated = {}
+    let companyGroupMockGenerated = {}
     let counter = 1
 
     beforeEach(() => {
+      companyGroupMockGenerated = generateCompanyGroup(counter.toString())
       companyMockGenerated = generateCompany(counter)
       counter += 1
     })
@@ -178,6 +184,35 @@ describe('tests about company domain: ', () => {
         }]))
     })
 
+    test('try to create two companies as the same cnpj', async () => {
+      await companyDomain.create(companyMockGenerated)
+
+      await expect(companyDomain.create(companyMockGenerated)).rejects
+        .toThrowError(new FieldValidationError([{
+          field: 'cnpj',
+          message: 'cnpj already exists',
+        }]))
+    })
+
+    test('try to create a company with cnpj already registered in a companyGroup', async () => {
+      const chipMock1 = {
+        ...companyGroupMockGenerated,
+        cnpj: '18731118000155',
+      }
+      const chipMock2 = {
+        ...companyMockGenerated,
+        cnpj: '18731118000155',
+      }
+
+      await companyGroupDomain.create(chipMock1)
+
+      await expect(companyDomain.create(chipMock2)).rejects
+        .toThrowError(new FieldValidationError([{
+          field: 'cnpj',
+          message: 'cnpj already exists',
+        }]))
+    })
+
     test('type of unit does not have company group', async () => {
       const companyMock = {
         ...companyMockGenerated,
@@ -221,11 +256,8 @@ describe('tests about company domain: ', () => {
         type: 'master',
       }
       const chipMock = R.omit(['companyGroupId'], companyMock)
-      // console.log(companyMock)
 
       const companyCreated = await companyDomain.create(chipMock)
-
-      // console.log(JSON.stringify(companyCreated.companyGroupId))
 
       expect(companyCreated.companyGroupId).toBeTruthy()
     })
