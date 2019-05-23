@@ -31,8 +31,8 @@ module.exports = (sequelize) => {
         allowNull: true,
       },
     })
+    companyGroup.belongsToMany(models.contact,
+      { through: 'companyGroupContact' })
   }
-
-
   return companyGroup
 }

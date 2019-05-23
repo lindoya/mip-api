@@ -7,8 +7,6 @@ const database = require('../../database')
 
 const Contact = database.model('contact')
 
-
-
 class ContactDomain {
   // eslint-disable-next-line camelcase
   async create(bodyData, options = {}) {
@@ -18,7 +16,6 @@ class ContactDomain {
 
     const contactNotHas = prop => R.not(R.has(prop, contact))
 
-
     if (contactNotHas('name') || !contact.name) {
       throw new FieldValidationError([{
         field: 'name',
@@ -26,6 +23,7 @@ class ContactDomain {
       }])
     }
 
+    // eslint-disable-next-line no-useless-escape
     if (!/^[\w\s\.À-ú\-]+$/.test(contact.name)) {
       throw new FieldValidationError([{
         field: 'name',
@@ -40,7 +38,10 @@ class ContactDomain {
       }])
     }
 
-    if (!/^[\w_\-\.]+@[\w_\-\.]{2,}\.[\w]{2,}(\.[\w])?/.test(contact.email)) {
+    const { email } = contact
+
+    // eslint-disable-next-line no-useless-escape
+    if (!/^[\w_\-\.]+@[\w_\-\.]{2,}\.[\w]{2,}(\.[\w])?/.test(email)) {
       throw new FieldValidationError([{
         field: 'email',
         message: 'email is inválid',
@@ -54,13 +55,6 @@ class ContactDomain {
       }])
     }
 
-    if (!/^[\w\s\.À-ú\-]+$/.test(contact.position)) {
-      throw new FieldValidationError([{
-        field: 'position',
-        message: 'type only letter and numbers',
-      }])
-    }
-
     if (contactNotHas('phone') || !contact.phone) {
       throw new FieldValidationError([{
         field: 'phone',
@@ -68,7 +62,9 @@ class ContactDomain {
       }])
     }
 
-    if (!/^[0-9]{10,11}$/.test(contact.phone)) {
+    const { phone } = contact
+
+    if (!/^[0-9]{10,11}$/.test(phone)) {
       throw new FieldValidationError([{
         field: 'phone',
         message: 'phone is inválid',
@@ -119,7 +115,6 @@ class ContactDomain {
     const contact = R.omit(['id'], bodyData)
 
     const contactHas = prop => R.has(prop, contact)
-
 
     let newContact = {}
 

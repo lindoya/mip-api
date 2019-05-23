@@ -7,14 +7,17 @@ const { FieldValidationError } = require('../../../helpers/errors')
 const database = require('../../../database')
 
 const AddressDomain = require('../../address')
+const ContactDomain = require('../../contact')
 
 const CompanyGroup = database.model('companyGroup')
 const Company = database.model('company')
 const Address = database.model('address')
+const Contact = database.model('contact')
 
 const formatQuery = require('../../../helpers/lazyLoad')
 
 const addressDomain = new AddressDomain()
+const contactDomain = new ContactDomain()
 
 class CompanyGroupDomain {
   // eslint-disable-next-line camelcase
@@ -83,6 +86,8 @@ class CompanyGroupDomain {
       }
     }
 
+    // const contact = []
+
     let companyGroupFormatted = {
       ...companyGroup,
       addressId: null,
@@ -110,6 +115,42 @@ class CompanyGroupDomain {
       transaction,
     })
 
+    return companyGroupReturned
+  }
+
+  async addContactInCompanyGroup(companyGruopId, bodyData, options = {}) {
+    const { transaction = null } = options
+
+    const newContact = R.omit(['id'], bodyData)
+
+    const companyGroup = await CompanyGroup.findByPk(companyGruopId, {
+      transaction,
+    })
+
+    if (!companyGroup) {
+      throw new FieldValidationError([{
+        field: 'companyGroupContact',
+        message: 'there is no companyGroupConatct with this id',
+      }])
+    }
+
+    const contactCreated = await contactDomain.create(newContact, {
+      transaction,
+    })
+
+    await companyGroup.addContacts([contactCreated], { transaction })
+
+    const companyGroupReturned = await CompanyGroup.findByPk(companyGruopId, {
+      include: [
+        {
+          model: Address,
+        },
+        {
+          model: Contact,
+        },
+      ],
+      transaction,
+    })
     return companyGroupReturned
   }
 
