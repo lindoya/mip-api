@@ -28,11 +28,8 @@ describe('Company Group test', () => {
       addressMockGenerated = generateAddress(counter.toString())
       contactMockGenerated = generateContact(counter)
       contactMockGenerated1 = generateContact(counter + 1)
+      addressMockGenerated = generateAddress(counter.toString())
       counter += 1
-    })
-    beforeEach(() => {
-      addressMockGenerated = generateAddress(addressCounter.toString())
-      addressCounter += 1
     })
 
     test('create company group with correct date', async () => {
@@ -147,13 +144,13 @@ describe('Company Group test', () => {
         }]))
     })
 
-    //   test('create companyGroup with correct address', async () => {
-    //     const companyGroupMock = {
-    //       ...companyGroupMockGenerated,
-    //       address: addressMockGenerated,
-    //     }
+    test('create companyGroup with correct address', async () => {
+      const companyGroupMock = {
+        ...companyGroupMockGenerated,
+        address: addressMockGenerated,
+      }
 
-    //     const companyGroupCreated = await companyGroupDomain.create(companyGroupMock)
+      const companyGroupCreated = await companyGroupDomain.create(companyGroupMock)
 
       expect(companyGroupCreated.address.street).toBe(addressMockGenerated.street)
       expect(companyGroupCreated.address.number).toBe(addressMockGenerated.number)
@@ -185,93 +182,92 @@ describe('Company Group test', () => {
     })
   })
 
-    describe('getCompanyGroupByIdTest', () => {
-      let companyGroupMockGenerated = null
-      let counter = 400
+  describe('getCompanyGroupByIdTest', () => {
+    let companyGroupMockGenerated = null
+    let counter = 400
 
-      beforeEach(async () => {
-        const companyGroupMock = generateCompanyGroup(counter.toString())
-        counter += 1
-        companyGroupMockGenerated = await companyGroupDomain.create(companyGroupMock)
-      })
+    beforeEach(async () => {
+      const companyGroupMock = generateCompanyGroup(counter.toString())
+      counter += 1
+      companyGroupMockGenerated = await companyGroupDomain.create(companyGroupMock)
+    })
 
     test('get company group by id with correct date', async () => {
       // eslint-disable-next-line max-len
       const companyGroupReturned = await companyGroupDomain
         .companyGroup_GetById(companyGroupMockGenerated.id)
 
-        expect(companyGroupReturned.groupName).toEqual(companyGroupMockGenerated.groupName)
-        expect(companyGroupReturned.description).toEqual(companyGroupMockGenerated.description)
-      })
-
-      test('get company group by id null', async () => {
-        await expect(companyGroupDomain.companyGroup_GetById(null))
-          .rejects.toThrowError(new FieldValidationError([{
-            field: 'id',
-            message: 'id cannot be null',
-          }]))
-      })
-
-      test('get company group by incorrect id', async () => {
-        await expect(companyGroupDomain.companyGroup_GetById('eda')).rejects
-          .toThrowError(new FieldValidationError([{
-            field: 'id',
-            message: 'id is invalid',
-          }]))
-      })
+      expect(companyGroupReturned.groupName).toEqual(companyGroupMockGenerated.groupName)
+      expect(companyGroupReturned.description).toEqual(companyGroupMockGenerated.description)
     })
 
-    describe('updateChipByIdTest', () => {
-      let companyGroupMockGenerated = null
-      let counter = 500
+    test('get company group by id null', async () => {
+      await expect(companyGroupDomain.companyGroup_GetById(null))
+        .rejects.toThrowError(new FieldValidationError([{
+          field: 'id',
+          message: 'id cannot be null',
+        }]))
+    })
 
-      beforeEach(async () => {
-        const companyGroupMock = generateCompanyGroup(counter.toString())
-        counter += 1
-        companyGroupMockGenerated = await companyGroupDomain.create(companyGroupMock)
-      })
+    test('get company group by incorrect id', async () => {
+      await expect(companyGroupDomain.companyGroup_GetById('eda')).rejects
+        .toThrowError(new FieldValidationError([{
+          field: 'id',
+          message: 'id is invalid',
+        }]))
+    })
+  })
 
-      test('update company group by id with only groupName', async () => {
-        const companyGroupMock = R.omit(['description'], companyGroupMockGenerated)
-        companyGroupMock.groupName = 'eaeeee jooow'
+  describe('updateChipByIdTest', () => {
+    let companyGroupMockGenerated = null
+    let counter = 500
+
+    beforeEach(async () => {
+      const companyGroupMock = generateCompanyGroup(counter.toString())
+      counter += 1
+      companyGroupMockGenerated = await companyGroupDomain.create(companyGroupMock)
+    })
+
+    test('update company group by id with only groupName', async () => {
+      const companyGroupMock = R.omit(['description'], companyGroupMockGenerated)
+      companyGroupMock.groupName = 'eaeeee jooow'
 
       // eslint-disable-next-line max-len
       const companyGroupUpdate = await companyGroupDomain
         .companyGroup_UpdateById(companyGroupMockGenerated.id, companyGroupMock)
 
-        expect(companyGroupUpdate.groupName).toEqual(companyGroupMock.groupName)
-        expect(companyGroupUpdate.description).toEqual(companyGroupMockGenerated.description)
-      })
-
-      test('try update company group by id with groupName existent', async () => {
-        const companyGroupMock = generateCompanyGroup('599')
-        companyGroupMock.groupName = companyGroupMockGenerated.groupName
-
-        await expect(companyGroupDomain.create(companyGroupMock)).rejects
-          .toThrowError(new FieldValidationError([{
-            field: 'groupName',
-            message: 'groupName already exist',
-          }]))
-      })
-
-      test('update company group by id with only description', async () => {
-        const companyGroupMock = R.omit(['groupName'], companyGroupMockGenerated)
-        companyGroupMock.description = 'TESTEEEEE'
-
-        // eslint-disable-next-line max-len
-        const companyGroupUpdate = await companyGroupDomain.companyGroup_UpdateById(companyGroupMockGenerated.id, companyGroupMock)
-
-        expect(companyGroupUpdate.groupName).toEqual(companyGroupMockGenerated.groupName)
-        expect(companyGroupUpdate.description).toEqual(companyGroupMock.description)
-      })
+      expect(companyGroupUpdate.groupName).toEqual(companyGroupMock.groupName)
+      expect(companyGroupUpdate.description).toEqual(companyGroupMockGenerated.description)
     })
 
-    describe('get all tests', () => {
-      test('getAll', async () => {
-        const query = {}
+    test('try update company group by id with groupName existent', async () => {
+      const companyGroupMock = generateCompanyGroup('599')
+      companyGroupMock.groupName = companyGroupMockGenerated.groupName
 
-        await companyGroupDomain.companyGroup_GetAll(query)
-      })
+      await expect(companyGroupDomain.create(companyGroupMock)).rejects
+        .toThrowError(new FieldValidationError([{
+          field: 'groupName',
+          message: 'groupName already exist',
+        }]))
+    })
+
+    test('update company group by id with only description', async () => {
+      const companyGroupMock = R.omit(['groupName'], companyGroupMockGenerated)
+      companyGroupMock.description = 'TESTEEEEE'
+
+      // eslint-disable-next-line max-len
+      const companyGroupUpdate = await companyGroupDomain.companyGroup_UpdateById(companyGroupMockGenerated.id, companyGroupMock)
+
+      expect(companyGroupUpdate.groupName).toEqual(companyGroupMockGenerated.groupName)
+      expect(companyGroupUpdate.description).toEqual(companyGroupMock.description)
+    })
+  })
+
+  describe('get all tests', () => {
+    test('getAll', async () => {
+      const query = {}
+
+      await companyGroupDomain.companyGroup_GetAll(query)
     })
   })
 })

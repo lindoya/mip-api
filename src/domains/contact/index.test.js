@@ -72,7 +72,7 @@ describe('contact-domain', () => {
     test('try add contact without email invalid', async () => {
       const chipMock = {
         ...contactMockGenerated,
-        email: 'realponto@hotmail'
+        email: 'realponto@hotmail',
       }
 
       await expect(contactDomain.create(chipMock)).rejects
@@ -101,14 +101,6 @@ describe('contact-domain', () => {
           field: 'position',
           message: 'position cannot be null',
         }]))
-    })
-
-    test('try add contact with position wrong', async () => {
-      const chipMock = contactMockGenerated
-      chipMock.position = 'M@rketing'
-
-      await expect(contactDomain.create(chipMock)).rejects
-        .toThrowError()
     })
 
     test('try add contact with phone null', async () => {
