@@ -25,7 +25,7 @@
     "cors": "^2.8.5",
     "dotenv": "^6.2.0",
     "email-templates": "^5.0.3",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "faker": "^4.1.0",
     "jest": "^23.6.0",
     "mime-db": "^1.38.0",
